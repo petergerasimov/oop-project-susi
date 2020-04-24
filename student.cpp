@@ -21,6 +21,19 @@ Student::~Student()
     program.clear();
     courses.clear();
 }
+Student& Student::operator=( const Student& s )
+{
+    setName( s.name );
+    setFN( s.fn );
+    setGroup( s.group );
+    setProgram( s.program );
+    setStatus( s.status );
+    setYear( s.year );
+    if( !s.courses.empty() )
+        this->courses = s.courses;
+
+    return *this;
+}
 //Setters
 void Student::setName( std::string name )
 {
@@ -91,7 +104,7 @@ bool Student::advance()
     }
     return false;
 }
-bool Student::change( char* option, char* value )
+bool Student::change( const char* option, const char* value )
 {
     static const int MIN_PASSED_COURSES = 2;
     if(!strcmp( option, "program" ))
@@ -139,14 +152,28 @@ void Student::resume()
 {
     this->status = active;
 }
-bool Student::enrollin( char* course )
+bool Student::enrollin( const char* course )
 {
-
+    // TODO:
+    // Записването е позволено само на 
+    // дисциплини от съответния курс и специалност
+    Course temp;
+    temp.name = course;
+    courses.push_back(temp);
+    return true;
 
 }
-bool Student::addGrade( char* course, float grade )
+bool Student::addGrade( const char* course, float grade )
 {
-
+    for( auto& c : courses )
+    {
+        if( c.name == std::string(course) )
+        {
+            c.grade = grade;
+            return true;
+        }
+    }
+    return false;
 }
 float Student::gradeAverage()
 {
@@ -182,4 +209,16 @@ int Student::unpassedCount( bool mandatory )
         }
     }
     return count;
+}
+
+bool Student::isInCourse( const char* course )
+{
+    for( auto& c : courses )
+    {
+        if( c.name == course )
+        {
+            return true;
+        }
+    }
+    return false;
 }

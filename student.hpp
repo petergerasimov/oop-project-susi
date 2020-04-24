@@ -25,6 +25,7 @@ class Student
         Student( std::string name, int fn, 
                  int group, std::string program );
         ~Student();
+        Student& operator=( const Student& s );
         //Setters
         void setName( std::string name );
         void setFN( int fn );
@@ -43,13 +44,15 @@ class Student
         void enroll( std::string name, int fn, 
                      int group, std::string program );
         bool advance();
-        bool change( char* option, char* value );
+        bool change( const char* option, const char* value );
         bool graduate();
         void interrupt();
         void resume();
-        bool enrollin( char* course );
-        bool addGrade( char* course, float grade );
+        bool enrollin( const char* course );
+        bool addGrade( const char* course, float grade );
         float gradeAverage();
+
+        bool isInCourse( const char* course );
 };
 
 #endif //__STUDENT_HPP

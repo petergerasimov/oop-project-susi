@@ -1,18 +1,9 @@
 #include <iostream>
-#include "command.hpp"
+#include "susi.hpp"
 
 int main()
 {
-    Command c;
-    while( true )
-    {
-        std::cout << "Enter command:\n$ " ;
-        std::cin >> c;
-        for( int i = 0; i < c.numberOfArgs(); i++ )
-        {
-            std::cout << c.arg(i) << std::endl;
-        }
-    }
-    
+    Susi susi;
+    while( susi.update() );
     return EXIT_SUCCESS;
 }
