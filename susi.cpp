@@ -235,7 +235,7 @@ void Susi::loadFromFile( const char* file )
             tempStudent.setYear( sAttributes[1] );
             tempStudent.setGroup( sAttributes[2] );
             tempStudent.setStatus( sAttributes[3] );
-
+            
             std::string program;
             for( int j = 0; j < sAttributes[4] && !infile.eof() ; j++ )
             {
@@ -255,6 +255,7 @@ void Susi::loadFromFile( const char* file )
                 // mandatory [bool]
                 Course course;
                 int courseNameLen = 0;
+                course.name.clear();
                 infile.read( ( char * ) &courseNameLen, sizeof( courseNameLen ) );
                 for( int k = 0; k < courseNameLen && !infile.eof() ; k++ )
                 {
@@ -308,11 +309,11 @@ void Susi::saveToFile( const char* file )
             outfile.write( (char *)&year, sizeof( year ) );
             int group = students[i].getGroup();
             outfile.write( (char *)&group, sizeof( group ) );
-            int status = students[i].getFN();
-            outfile.write( (char *)&fn, sizeof( fn ) );
+            int status = students[i].getStatus();
+            outfile.write( (char *)&status, sizeof( status ) );
 
-            int programLen = students[i].getFN();
-            outfile.write( (char *)&fn, sizeof( fn ) );
+            int programLen = students[i].getProgram().length();
+            outfile.write( (char *)&programLen, sizeof( programLen ) );
             outfile.write( students[i].getProgram().c_str(), sizeof( char ) * programLen );
 
             int numOfCourses = students[i].numberOfCourses();
@@ -350,11 +351,7 @@ void Susi::print( int fn )
 {
     if( !getStudent( fn ) )
         return;
-    std::cout << getStudent( fn )->getName() << ' '
-              << getStudent( fn )->getFN() << ' '
-              << getStudent( fn )->getProgram() << ' '
-              << getStudent( fn )->getYear() << ' '
-              << getStudent( fn )->gradeAverage() << '\n';
+    std::cout << *getStudent( fn ) << std::endl;
 }
 void Susi::printall( const char* program, int year )
 {
@@ -366,11 +363,7 @@ void Susi::printall( const char* program, int year )
         if( !student.getProgram().compare(program) && 
             student.getYear() == year )
         {
-            std::cout << student.getName() << ' '
-                      << student.getFN() << ' '
-                      << student.getProgram() << ' '
-                      << student.getYear() << ' '
-                      << student.gradeAverage() << '\n';
+            std::cout << student << std::endl;
         }
     }
 }
@@ -382,16 +375,20 @@ void Susi::protocol( const char* course )
     {
         if( student.isInCourse( course ) )
         {
-            std::cout << student.getName() << ' '
-                      << student.getFN() << ' '
-                      << student.gradeAverage() << '\n';
+             std::cout << student << std::endl;
         }
     }
 }
 void Susi::report( int fn )
 {
     // TODO: Add more info
-    print( fn );
+    if( !getStudent( fn ) )
+        return;
+    std::cout << *getStudent( fn ) << std::endl;
+    for( const auto& course : getStudent( fn )->getCourses() )
+    {
+        std::cout << course.name << ' ' << course.grade << std::endl;
+    }
 }
 bool Susi::open( const char* file )
 {

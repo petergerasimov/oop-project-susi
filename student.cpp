@@ -34,6 +34,16 @@ Student& Student::operator=( const Student& s )
 
     return *this;
 }
+std::ostream& operator<<(std::ostream &out, const Student &s)
+{
+    out << s.getName() << ' '
+        << s.getFN() << ' '
+        << s.getProgram() << ' '
+        << s.getYear() << ' '
+        << s.gradeAverage();
+    return out;
+}
+
 //Setters
 void Student::setName( std::string name )
 {
@@ -179,7 +189,7 @@ bool Student::addGrade( const char* course, float grade )
     }
     return false;
 }
-float Student::gradeAverage()
+const float Student::gradeAverage() const
 {
     if( !courses.size() )
         return 0;

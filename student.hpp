@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 #include "mytypes.hpp"
 
 enum Status { interrupted = -1, active, graduated };
@@ -26,6 +27,7 @@ class Student
                  int group, std::string program );
         ~Student();
         Student& operator=( const Student& s );
+        friend std::ostream& operator<<(std::ostream &out, const Student &s);
         //Setters
         void setName( std::string name );
         void setFN( int fn );
@@ -51,7 +53,7 @@ class Student
         void resume();
         bool enrollin( const char* course );
         bool addGrade( const char* course, float grade );
-        float gradeAverage();
+        const float gradeAverage() const;
 
         bool isInCourse( const char* course );
         int numberOfCourses();
