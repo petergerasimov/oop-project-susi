@@ -1,129 +1,171 @@
+#include <fstream>
+
 #include "susi.hpp"
 
 Susi::Susi()
 {
-
+    currentFile = "default.dat";
+    open( currentFile.c_str() );
+    isFileOpen = true;
 }
 Susi::~Susi()
 {
-
+    currentFile.clear();
+    students.clear();
 }
 bool Susi::update()
 {
     std::cout << "Enter command:\n$ ";
     std::cin >> c;
     bool worked = true;
-    if( !strcmp( c.arg(0), "enroll" ) )
+    if ( isFileOpen )
     {
-        worked = enroll( atoi( c.arg(1) ), c.arg(2), atoi( c.arg(3) ), c.arg(4) );
-    }
-    else if( !strcmp( c.arg(0), "advance" ) )
-    {
-        if(getStudent( atoi(c.arg(1))) )
+        if ( !strcmp(c.arg(0), "enroll") )
         {
-            worked = getStudent( atoi(c.arg(1)) )->advance();
+            worked = enroll(atoi(c.arg(1)), c.arg(2), atoi(c.arg(3)), c.arg(4));
+        }
+        else if ( !strcmp(c.arg(0), "advance") )
+        {
+            if ( getStudent(atoi(c.arg(1))) )
+            {
+                worked = getStudent( atoi(c.arg(1)) )->advance();
+            }
+            else
+            {
+                worked = false;
+            }
+        }
+        else if ( !strcmp( c.arg(0), "change" ) )
+        {
+            if ( getStudent( atoi(c.arg(1)) ) )
+            {
+                worked = getStudent( atoi( c.arg(1) ) )->change( c.arg(2), c.arg(3) );
+            }
+            else
+            {
+                worked = false;
+            }
+        }
+        else if (!strcmp( c.arg(0), "graduate" ))
+        {
+            if (getStudent(atoi(c.arg(1))))
+            {
+                worked = getStudent( atoi( c.arg(1) ) )->graduate();
+            }
+            else
+            {
+                worked = false;
+            }
+        }
+        else if (!strcmp( c.arg(0), "interrupt" ))
+        {
+            if ( getStudent( atoi( c.arg(1) ) ) )
+            {
+                getStudent( atoi( c.arg(1) ) )->interrupt();
+            }
+            else
+            {
+                worked = false;
+            }
+        }
+        else if ( !strcmp( c.arg(0), "resume" ) )
+        {
+            if (getStudent(atoi(c.arg(1))))
+            {
+                getStudent(atoi(c.arg(1)))->resume();
+            }
+            else
+            {
+                worked = false;
+            }
+        }
+        else if ( !strcmp( c.arg(0), "print" ) )
+        {
+            print(atoi(c.arg(1)));
+        }
+        else if ( !strcmp( c.arg(0), "printall" ) )
+        {
+            printall(c.arg(1), atoi(c.arg(2)));
+        }
+        else if ( !strcmp( c.arg(0), "enrollin" ) )
+        {
+            if (getStudent(atoi(c.arg(1))))
+            {
+                getStudent(atoi(c.arg(1)))->enrollin(c.arg(2));
+            }
+            else
+            {
+                worked = false;
+            }
+        }
+        else if ( !strcmp( c.arg(0), "addgrade" ) )
+        {
+            if ( getStudent( atoi( c.arg(1) ) ) )
+            {
+                getStudent( atoi( c.arg(1) ) )->addGrade( c.arg(2), atoi(c.arg(3) ) );
+            }
+            else
+            {
+                worked = false;
+            }
+        }
+        else if ( !strcmp( c.arg(0), "protocol" ) )
+        {
+            protocol( c.arg(1) );
+        }
+        else if ( !strcmp( c.arg(0), "report" ) )
+        {
+            report( atoi( c.arg(1) ) );
+        }
+        else if ( !strcmp( c.arg(0), "close" ) )
+        {
+            close();
+        }
+        else if ( !strcmp( c.arg(0), "save" ) )
+        {
+            save();
+        }
+        else if ( !strcmp( c.arg(0), "saveas" ) )
+        {
+            saveAs( c.arg(1) );
+        }
+        else if( !strcmp( c.arg(0), "help" ) )
+        {
+            help();
+        }
+        else if( !strcmp( c.arg(0), "exit" ) )
+        {
+            return false;
         }
         else
         {
+            std::cout << "Unknown command\n" << std::endl;
             worked = false;
         }
-    }
-    else if( !strcmp( c.arg(0), "change" ) )
-    {
-        if(getStudent( atoi(c.arg(1))) )
-        {
-            worked = getStudent( atoi(c.arg(1)) )->change( c.arg(2), c.arg(3) );
-        }
-        else
-        {
-            worked = false;
-        }
-    }
-    else if( !strcmp( c.arg(0), "graduate" ) )
-    {
-        if(getStudent( atoi(c.arg(1))) )
-        {
-            worked = getStudent( atoi(c.arg(1)) )->graduate();
-        }
-        else
-        {
-            worked = false;
-        }
-    }
-    else if( !strcmp( c.arg(0), "interrupt" ) )
-    {
-        if(getStudent( atoi(c.arg(1))) )
-        {
-            getStudent( atoi(c.arg(1)) )->interrupt();
-        }
-        else
-        {
-            worked = false;
-        }
-    }
-    else if( !strcmp( c.arg(0), "resume" ) )
-    {
-        if(getStudent( atoi(c.arg(1))) )
-        {
-            getStudent( atoi(c.arg(1)) )->resume();
-        }
-        else
-        {
-            worked = false;
-        }
-
-    }
-    else if( !strcmp( c.arg(0), "print" ) )
-    {
-        print( atoi( c.arg(1) ) );
-    }
-    else if( !strcmp( c.arg(0), "printall" ) )
-    {
-        printall( c.arg(1), atoi( c.arg(2) ) );
-    }
-    else if( !strcmp( c.arg(0), "enrollin" ) )
-    {
-        if(getStudent( atoi(c.arg(1))) )
-        {
-            getStudent( atoi(c.arg(1)) )->enrollin( c.arg(2) );
-        }
-        else
-        {
-            worked = false;
-        }
-    }
-    else if( !strcmp( c.arg(0), "addgrade" ) )
-    {
-        if(getStudent( atoi(c.arg(1))) )
-        {
-            getStudent( atoi(c.arg(1)) )->addGrade( c.arg(2), atoi( c.arg(3) ) );
-        }
-        else
-        {
-            worked = false;
-        }
-    }
-    else if( !strcmp( c.arg(0), "protocol" ) )
-    {
-        protocol( c.arg(1) );
-    }
-    else if( !strcmp( c.arg(0), "report" ) )
-    {
-        report( atoi( c.arg(1) ) );
-    }
-    else if( !strcmp( c.arg(0), "help" ) )
-    {
-        help();
-    }
-    else if( !strcmp( c.arg(0), "exit" ) )
-    {
-        return false;
     }
     else
     {
-        std::cout << "Unknown command\n" << std::endl;
-        worked = false;
+        std::cout << "Please open a file!\n";
+        if( !strcmp( c.arg(0), "help" ) )
+        {
+            help();
+        }
+        else if( !strcmp( c.arg(0), "exit" ) )
+        {
+            return false;
+        }
+        else if( !strcmp( c.arg(0), "open" ) )
+        {
+            open( c.arg(1) );
+        }
+        else
+        {
+            std::cout << "Unknown command\n" << std::endl;
+            worked = false;
+        }
     }
+    
+    
 
     if( worked )
     {
@@ -150,11 +192,150 @@ Student* Susi::getStudent( int fn )
 }
 void Susi::loadFromFile( const char* file )
 {
+    std::ifstream infile;
+    infile.open( file , std::ios::binary | std::ios::in );
+    if( infile )
+    {
+        // numOfStudents [int]
+        // students [vector]
+        int numOfStudents = 0;
+        infile.read( ( char * ) &numOfStudents, sizeof( numOfStudents ) );
+        for( int i = 0; i < numOfStudents && !infile.eof() ; i++ )
+        {
+            // nameLen [int]
+            // name [string]
+            // ------------
+            // fn [int]
+            // year [int]
+            // group [int]
+            // status [int]
+            // programLen [int]
+            // -------------
+            // program [string]
+            // numOfCourses [int]
+            // courses [vector]
+            Student tempStudent;
+            int nameLen = 0;
+            infile.read( ( char * ) &nameLen, sizeof( nameLen ) );
+            
+            std::string name;
+            for( int j = 0; j < nameLen && !infile.eof() ; j++ )
+            {
+                char c;
+                infile.read( &c, sizeof( c ) );
+                name.push_back( c );
+            }
+            tempStudent.setName( name );
+            
+            const int CONS_INTS = 5;
+            int sAttributes[CONS_INTS] = {0,};
+            infile.read( ( char * ) &sAttributes, sizeof(int) * CONS_INTS);
 
+            tempStudent.setFN( sAttributes[0] );
+            tempStudent.setYear( sAttributes[1] );
+            tempStudent.setGroup( sAttributes[2] );
+            tempStudent.setStatus( sAttributes[3] );
+
+            std::string program;
+            for( int j = 0; j < sAttributes[4] && !infile.eof() ; j++ )
+            {
+                char c;
+                infile.read( &c, sizeof( c ) );
+                program.push_back( c );
+            }
+            tempStudent.setProgram( program );
+
+            int numOfCourses = 0;
+            infile.read( ( char * ) &numOfCourses, sizeof( numOfCourses ) );
+            for( int j = 0; j < numOfCourses; j++ )
+            {
+                // courseNameLen [int]
+                // courseName [string]
+                // grade [float]
+                // mandatory [bool]
+                Course course;
+                int courseNameLen = 0;
+                infile.read( ( char * ) &courseNameLen, sizeof( courseNameLen ) );
+                for( int k = 0; k < courseNameLen && !infile.eof() ; k++ )
+                {
+                    char c;
+                    infile.read( &c, sizeof( c ) );
+                    course.name.push_back( c );
+                }
+                infile.read( ( char * ) &course.grade, sizeof( course.grade ) );
+                infile.read( ( char * ) &course.mandatory, sizeof( course.mandatory ) );
+
+                tempStudent.enrollin( course.name.c_str() );
+                tempStudent.addGrade( course.name.c_str(), course.grade );
+            }
+            students.push_back(tempStudent);
+        }
+    }
+    infile.close();
 }
 void Susi::saveToFile( const char* file )
 {
+    if( !students.empty() )
+    {
+        // numOfStudents [int]
+        // students [vector]
+        std::ofstream outfile;
+        outfile.open( file, std::ios::binary | std::ios::out | std::ios::trunc);
 
+        int numOfStudents = students.size();
+        outfile.write( (char *)&numOfStudents, sizeof( numOfStudents ) );
+        for( int i = 0; i < numOfStudents; i++ )
+        {
+            // nameLen [int]
+            // name [string]
+            // ---------------
+            // fn [int]
+            // year [int]
+            // group [int]
+            // status [int]
+            // programLen [int]
+            // ---------------
+            // program [string]
+            // numOfCourses [int]
+            // courses [vector]
+            int nameLen = students[i].getName().length();
+            outfile.write( (char *)&nameLen, sizeof( nameLen ) );
+            outfile.write( students[i].getName().c_str(), sizeof( char ) * nameLen );
+
+            int fn = students[i].getFN();
+            outfile.write( (char *)&fn, sizeof( fn ) );
+            int year = students[i].getYear();
+            outfile.write( (char *)&year, sizeof( year ) );
+            int group = students[i].getGroup();
+            outfile.write( (char *)&group, sizeof( group ) );
+            int status = students[i].getFN();
+            outfile.write( (char *)&fn, sizeof( fn ) );
+
+            int programLen = students[i].getFN();
+            outfile.write( (char *)&fn, sizeof( fn ) );
+            outfile.write( students[i].getProgram().c_str(), sizeof( char ) * programLen );
+
+            int numOfCourses = students[i].numberOfCourses();
+            outfile.write( (char *)&numOfCourses, sizeof( numOfCourses ) );
+            for( int j = 0; j < numOfCourses; j++ )
+            {
+                // courseNameLen [int]
+                // courseName [string]
+                // grade [float]
+                // mandatory [bool]
+                int courseNameLen = students[i].getCourses()[j].name.size();
+                outfile.write( (char *)&courseNameLen, sizeof( courseNameLen ) );
+                outfile.write( students[i].getCourses()[j].name.c_str(), sizeof( char ) * courseNameLen );
+
+                int grade = students[i].getCourses()[j].grade;
+                outfile.write( (char *)&grade, sizeof( grade ) );
+
+                int mandatory = students[i].getCourses()[j].mandatory;
+                outfile.write( (char *)&mandatory, sizeof( mandatory ) );
+            }
+        }
+        outfile.close();
+    }
 }
 //Commands
 bool Susi::enroll( int fn, const char* program, int group, const char* name )
@@ -221,6 +402,7 @@ bool Susi::open( const char* file )
     if( !currentFile.empty() )
     {
         loadFromFile( currentFile.c_str() );
+        isFileOpen = true;
         return true;
     }
     return false;
@@ -228,6 +410,8 @@ bool Susi::open( const char* file )
 void Susi::close()
 {
     currentFile.clear();
+    students.clear();
+    isFileOpen = false;
 }
 bool Susi::save()
 {

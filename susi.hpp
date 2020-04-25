@@ -16,7 +16,8 @@ class Susi
         //Helper functions
         Student* getStudent( int fn );
         //Files
-        std::string currentFile = "temp.dat";
+        std::string currentFile = "default.dat";
+        bool isFileOpen;
         void loadFromFile(const char* file);
         void saveToFile(const char* file);
         //Commands

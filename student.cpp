@@ -84,6 +84,10 @@ const int Student::getYear() const
 {
     return this->year;
 }
+const std::vector< Course > Student::getCourses() const
+{
+    return this->courses;
+}
 //
 void Student::enroll( std::string name, int fn, 
                       int group, std::string program )
@@ -221,4 +225,9 @@ bool Student::isInCourse( const char* course )
         }
     }
     return false;
+}
+
+int Student::numberOfCourses()
+{
+    return courses.size();
 }

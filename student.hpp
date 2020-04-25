@@ -40,6 +40,7 @@ class Student
         const int getStatus() const;
         const std::string getProgram() const;
         const int getYear() const;
+        const std::vector< Course > getCourses() const;
         //
         void enroll( std::string name, int fn, 
                      int group, std::string program );
@@ -53,6 +54,7 @@ class Student
         float gradeAverage();
 
         bool isInCourse( const char* course );
+        int numberOfCourses();
 };
 
 #endif //__STUDENT_HPP
