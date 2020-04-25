@@ -15,39 +15,114 @@ bool Susi::update()
     bool worked = true;
     if( !strcmp( c.arg(0), "enroll" ) )
     {
-        enroll( atoi( c.arg(1) ), c.arg(2), atoi( c.arg(3) ), c.arg(4) );
+        worked = enroll( atoi( c.arg(1) ), c.arg(2), atoi( c.arg(3) ), c.arg(4) );
     }
     else if( !strcmp( c.arg(0), "advance" ) )
     {
-        worked = getStudent( atoi(c.arg(1)) )->advance();
+        if(getStudent( atoi(c.arg(1))) )
+        {
+            worked = getStudent( atoi(c.arg(1)) )->advance();
+        }
+        else
+        {
+            worked = false;
+        }
     }
     else if( !strcmp( c.arg(0), "change" ) )
     {
-        worked = getStudent( atoi(c.arg(1)) )->change( c.arg(2), c.arg(3) );
+        if(getStudent( atoi(c.arg(1))) )
+        {
+            worked = getStudent( atoi(c.arg(1)) )->change( c.arg(2), c.arg(3) );
+        }
+        else
+        {
+            worked = false;
+        }
     }
     else if( !strcmp( c.arg(0), "graduate" ) )
     {
-        worked = getStudent( atoi(c.arg(1)) )->graduate();
-    }
-    else if( !strcmp( c.arg(0), "graduate" ) )
-    {
-        worked = getStudent( atoi(c.arg(1)) )->graduate();
+        if(getStudent( atoi(c.arg(1))) )
+        {
+            worked = getStudent( atoi(c.arg(1)) )->graduate();
+        }
+        else
+        {
+            worked = false;
+        }
     }
     else if( !strcmp( c.arg(0), "interrupt" ) )
     {
-        getStudent( atoi(c.arg(1)) )->interrupt();
+        if(getStudent( atoi(c.arg(1))) )
+        {
+            getStudent( atoi(c.arg(1)) )->interrupt();
+        }
+        else
+        {
+            worked = false;
+        }
     }
     else if( !strcmp( c.arg(0), "resume" ) )
     {
-        getStudent( atoi(c.arg(1)) )->resume();
+        if(getStudent( atoi(c.arg(1))) )
+        {
+            getStudent( atoi(c.arg(1)) )->resume();
+        }
+        else
+        {
+            worked = false;
+        }
+
     }
     else if( !strcmp( c.arg(0), "print" ) )
     {
         print( atoi( c.arg(1) ) );
     }
+    else if( !strcmp( c.arg(0), "printall" ) )
+    {
+        printall( c.arg(1), atoi( c.arg(2) ) );
+    }
+    else if( !strcmp( c.arg(0), "enrollin" ) )
+    {
+        if(getStudent( atoi(c.arg(1))) )
+        {
+            getStudent( atoi(c.arg(1)) )->enrollin( c.arg(2) );
+        }
+        else
+        {
+            worked = false;
+        }
+    }
+    else if( !strcmp( c.arg(0), "addgrade" ) )
+    {
+        if(getStudent( atoi(c.arg(1))) )
+        {
+            getStudent( atoi(c.arg(1)) )->addGrade( c.arg(2), atoi( c.arg(3) ) );
+        }
+        else
+        {
+            worked = false;
+        }
+    }
+    else if( !strcmp( c.arg(0), "protocol" ) )
+    {
+        protocol( c.arg(1) );
+    }
+    else if( !strcmp( c.arg(0), "report" ) )
+    {
+        report( atoi( c.arg(1) ) );
+    }
+    else if( !strcmp( c.arg(0), "help" ) )
+    {
+        help();
+    }
     else if( !strcmp( c.arg(0), "exit" ) )
     {
         return false;
+    }
+    else
+    {
+        std::cout << "Unknown command\n" << std::endl;
+        worked = false;
     }
 
     if( worked )
@@ -82,10 +157,13 @@ void Susi::saveToFile( const char* file )
 
 }
 //Commands
-void Susi::enroll( int fn, const char* program, int group, const char* name )
+bool Susi::enroll( int fn, const char* program, int group, const char* name )
 {
+    if( !fn || !program || !group || !name )
+        return false;
     Student temp( name, fn, group, program );
     students.push_back( temp );
+    return true;
 }
 void Susi::print( int fn )
 {
@@ -94,24 +172,31 @@ void Susi::print( int fn )
     std::cout << getStudent( fn )->getName() << ' '
               << getStudent( fn )->getFN() << ' '
               << getStudent( fn )->getProgram() << ' '
+              << getStudent( fn )->getYear() << ' '
               << getStudent( fn )->gradeAverage() << '\n';
 }
 void Susi::printall( const char* program, int year )
 {
+    if( !program )
+        return;
+
     for( auto& student : students )
     {
-        if( student.getProgram() == std::string(program) && 
+        if( !student.getProgram().compare(program) && 
             student.getYear() == year )
         {
             std::cout << student.getName() << ' '
                       << student.getFN() << ' '
                       << student.getProgram() << ' '
+                      << student.getYear() << ' '
                       << student.gradeAverage() << '\n';
         }
     }
 }
-void Susi::protocol( char* course )
+void Susi::protocol( const char* course )
 {
+    if( !course )
+        return;
     for( auto& student : students )
     {
         if( student.isInCourse( course ) )
@@ -146,11 +231,12 @@ void Susi::close()
 }
 bool Susi::save()
 {
-    saveAs( currentFile.c_str() );
+    return saveAs( currentFile.c_str() );
 }
 bool Susi::saveAs( const char* file )
 {
     saveToFile( file );
+    return true;
 }
 void Susi::help()
 {

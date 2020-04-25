@@ -20,10 +20,10 @@ class Susi
         void loadFromFile(const char* file);
         void saveToFile(const char* file);
         //Commands
-        void enroll( int fn, const char* program, int group, const char* name );
+        bool enroll( int fn, const char* program, int group, const char* name );
         void print( int fn );
         void printall( const char* program, int year );
-        void protocol( char* course );
+        void protocol( const char* course );
         void report( int fn );
         bool open( const char* file );
         void close();
