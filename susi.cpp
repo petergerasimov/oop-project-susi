@@ -328,10 +328,10 @@ void Susi::saveToFile( const char* file )
                 outfile.write( (char *)&courseNameLen, sizeof( courseNameLen ) );
                 outfile.write( students[i].getCourses()[j].name.c_str(), sizeof( char ) * courseNameLen );
 
-                int grade = students[i].getCourses()[j].grade;
+                float grade = students[i].getCourses()[j].grade;
                 outfile.write( (char *)&grade, sizeof( grade ) );
 
-                int mandatory = students[i].getCourses()[j].mandatory;
+                bool mandatory = students[i].getCourses()[j].mandatory;
                 outfile.write( (char *)&mandatory, sizeof( mandatory ) );
             }
         }
