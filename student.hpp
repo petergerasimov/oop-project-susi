@@ -21,6 +21,8 @@ class Student
         std::vector< Course > courses;
         //Returns the number of courses that haven't been passed
         int unpassedCount( bool mandatory = true );
+        //Get all the courses from the current year of the program the student is enrolled in
+        const std::vector< Course >* getCoursesInYear() const;
     public:
         Student();
         Student( std::string name, int fn, 

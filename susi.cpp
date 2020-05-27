@@ -81,17 +81,17 @@ bool Susi::update()
         }
         else if ( !strcmp( c.arg(0), "print" ) )
         {
-            print(atoi(c.arg(1)));
+            print( atoi(c.arg(1)) );
         }
         else if ( !strcmp( c.arg(0), "printall" ) )
         {
-            printall(c.arg(1), atoi(c.arg(2)));
+            printall( c.arg(1), atoi(c.arg(2)) );
         }
         else if ( !strcmp( c.arg(0), "enrollin" ) )
         {
             if (getStudent(atoi(c.arg(1))))
             {
-                getStudent(atoi(c.arg(1)))->enrollin(c.arg(2));
+                worked = getStudent( atoi( c.arg(1) ))->enrollin(c.arg(2) );
             }
             else
             {

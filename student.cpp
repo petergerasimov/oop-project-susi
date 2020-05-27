@@ -1,5 +1,6 @@
 #include "student.hpp"
 #include <cstring>
+#include "programs.hpp"
 
 Student::Student()
 {
@@ -98,6 +99,17 @@ const std::vector< Course > Student::getCourses() const
 {
     return this->courses;
 }
+const std::vector< Course >* Student::getCoursesInYear() const
+{
+    for( auto& p : programs )
+    {
+        if( p.name == program )
+        {
+            return &p.years[ year - 1 ];
+        }
+    }
+    return nullptr;
+}
 //
 void Student::enroll( std::string name, int fn, 
                       int group, std::string program )
@@ -168,14 +180,20 @@ void Student::resume()
 }
 bool Student::enrollin( const char* course )
 {
-    // TODO:
-    // Записването е позволено само на 
-    // дисциплини от съответния курс и специалност
-    Course temp;
-    temp.name = course;
-    courses.push_back(temp);
-    return true;
 
+    if( !getCoursesInYear() )
+        return false;
+
+    for( const auto& c : *getCoursesInYear() )
+    {
+        if( c.name == course )
+        {
+            courses.push_back( c );
+            return true;
+        }
+    }
+
+    return false;
 }
 bool Student::addGrade( const char* course, float grade )
 {
