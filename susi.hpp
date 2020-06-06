@@ -31,6 +31,7 @@ class Susi
         bool save();
         bool saveAs( const char* file );
         void help();
+        void sortStudents( std::vector<Student*> &toSort );
     public:
         Susi();
         ~Susi();

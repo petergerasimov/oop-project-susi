@@ -6,6 +6,9 @@
 #include <string>
 #include <vector>
 
+/**
+@brief Клас който превръща подаден на входа низ на отделни думи (параметри).
+*/
 class Command
 {
     private:

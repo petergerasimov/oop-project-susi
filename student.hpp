@@ -12,6 +12,8 @@ class Student
 {
     private:
         static const int MIN_PASS_GRADE = 3;
+        static const int MIN_PASSED_COURSES = 2;
+        static const int GRADUATION_YEAR = 4;
         std::string name;
         int fn;
         int year;

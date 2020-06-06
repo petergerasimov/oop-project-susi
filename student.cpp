@@ -37,11 +37,11 @@ Student& Student::operator=( const Student& s )
 }
 std::ostream& operator<<(std::ostream &out, const Student &s)
 {
-    out << s.getName() << ' '
-        << s.getFN() << ' '
-        << s.getProgram() << ' '
-        << s.getYear() << ' '
-        << s.gradeAverage();
+    out << "Name:" << s.getName() << ' '
+        << "FN:" << s.getFN() << ' '
+        << "Program:" << s.getProgram() << ' '
+        << "Year:" << s.getYear() << ' '
+        << "Grade Avg:" << s.gradeAverage();
     return out;
 }
 
@@ -123,7 +123,7 @@ void Student::enroll( std::string name, int fn,
 }
 bool Student::advance()
 {
-    if( gradeAverage() > MIN_PASS_GRADE )
+    if( unpassedCount() <= MIN_PASSED_COURSES )
     {
         this->year++;
         return true;
@@ -132,23 +132,57 @@ bool Student::advance()
 }
 bool Student::change( const char* option, const char* value )
 {
-    static const int MIN_PASSED_COURSES = 2;
-    if(!strcmp( option, "program" ))
+    if( !option || !value )
+        return false;
+
+    
+    if( !strcmp( option, "program" ) )
     {
-        // TODO:
-        // Прехвърлянето в друга специалност е възможно само,
-        // ако студентът е положил успешно изпити по всички 
-        // задължителни предмети от минали курсове на новата специалност.
-        setProgram(std::string(value));
-        return true;
+        bool foundProg = false;
+        int unpassed = 0;
+        for( auto& p : programs )
+        {
+            if( !strcmp( p.name.c_str(), value ) )
+            {
+                foundProg = true;
+                for( int i = 0; i < p.years.size() && i < (year - 1) ; i++ )
+                {
+                    for( auto& course : p.years[i] )
+                    {
+                        bool foundCourse = false;
+                        for( auto& studentCourse : courses )
+                        {
+                            if( course.name == studentCourse.name )
+                            {
+                                foundCourse = true;
+                                if( studentCourse.grade < MIN_PASS_GRADE && studentCourse.mandatory)
+                                {
+                                    unpassed++;
+                                }
+                                break;
+                            }
+                        }
+                        if(!foundCourse && course.mandatory)
+                        {
+                            unpassed++;
+                        }
+                    }
+                }
+            }
+        }
+
+        if(foundProg && unpassed == 0)
+            setProgram(std::string(value));
+
+        return foundProg && unpassed == 0;
 
     }
-    else if(!strcmp( option, "group" ))
+    else if( !strcmp( option, "group" ) )
     {
         setGroup( atoi(value) );
         return true;
     }
-    else if(!strcmp( option, "year" ))
+    else if( !strcmp( option, "year" ) )
     {
         if( unpassedCount() <= MIN_PASSED_COURSES )
         {
@@ -163,7 +197,7 @@ bool Student::change( const char* option, const char* value )
 }
 bool Student::graduate()
 {
-    if( unpassedCount( false ) == 0 )
+    if( unpassedCount( false ) == 0 && year == GRADUATION_YEAR )
     {
         this->status = graduated;
         return true;
@@ -197,6 +231,9 @@ bool Student::enrollin( const char* course )
 }
 bool Student::addGrade( const char* course, float grade )
 {
+    if( !course )
+        return false;
+
     for( auto& c : courses )
     {
         if( c.name == std::string(course) )
@@ -247,7 +284,7 @@ bool Student::isInCourse( const char* course )
 {
     for( auto& c : courses )
     {
-        if( c.name == course )
+        if( !strcmp( c.name.c_str(), course ) )
         {
             return true;
         }

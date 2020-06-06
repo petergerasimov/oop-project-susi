@@ -18,6 +18,11 @@ bool Susi::update()
     std::cout << "Enter command:\n$ ";
     std::cin >> c;
     bool worked = true;
+    if ( c.numberOfArgs() <= 0 )
+    {
+        std::cout << "Please enter a command!" << std::endl;
+        return true;
+    }
     if ( isFileOpen )
     {
         if ( !strcmp(c.arg(0), "enroll") )
@@ -102,7 +107,7 @@ bool Susi::update()
         {
             if ( getStudent( atoi( c.arg(1) ) ) )
             {
-                getStudent( atoi( c.arg(1) ) )->addGrade( c.arg(2), atoi(c.arg(3) ) );
+                worked = getStudent( atoi( c.arg(1) ) )->addGrade( c.arg(2), atof(c.arg(3) ) );
             }
             else
             {
@@ -371,17 +376,27 @@ void Susi::protocol( const char* course )
 {
     if( !course )
         return;
+
+    std::vector<Student*> toSort;
     for( auto& student : students )
     {
         if( student.isInCourse( course ) )
         {
-             std::cout << student << std::endl;
+            toSort.push_back(&student);
         }
     }
+    if(toSort.size() > 0)
+    {
+        sortStudents(toSort);
+        for( auto& student : toSort )
+        {
+            std::cout << (*student) << std::endl;
+        }
+    }
+    
 }
 void Susi::report( int fn )
 {
-    // TODO: Add more info
     if( !getStudent( fn ) )
         return;
     std::cout << *getStudent( fn ) << std::endl;
@@ -422,4 +437,24 @@ bool Susi::saveAs( const char* file )
 void Susi::help()
 {
     std::cout << "exit - exits program" << std::endl;
+}
+
+void Susi::sortStudents( std::vector<Student *> &toSort )
+{
+    for (int i = 0; i < toSort.size() - 1; i++)
+    {
+        for (int j = i + 1; j > 0; j--)
+        {
+            if (toSort[j - 1]->getFN() > toSort[j]->getFN())
+            {
+                Student* temp = toSort[j - 1];
+                toSort[j - 1] = toSort[j];
+                toSort[j] = temp;
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
 }
