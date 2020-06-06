@@ -271,8 +271,7 @@ void Susi::loadFromFile( const char* file )
                 infile.read( ( char * ) &course.grade, sizeof( course.grade ) );
                 infile.read( ( char * ) &course.mandatory, sizeof( course.mandatory ) );
 
-                tempStudent.enrollin( course.name.c_str() );
-                tempStudent.addGrade( course.name.c_str(), course.grade );
+                tempStudent.addCourse(course);
             }
             students.push_back(tempStudent);
         }

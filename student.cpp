@@ -296,3 +296,8 @@ int Student::numberOfCourses()
 {
     return courses.size();
 }
+
+void Student::addCourse( const Course& course )
+{
+    courses.push_back(course);
+}

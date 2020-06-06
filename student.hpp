@@ -61,6 +61,7 @@ class Student
 
         bool isInCourse( const char* course );
         int numberOfCourses();
+        void addCourse( const Course& course );
 };
 
 #endif //__STUDENT_HPP
